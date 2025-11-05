@@ -1,0 +1,768 @@
+{
+    "info": {
+        "name": "Slot Swapper API",
+        "description": "Complete API collection for Slot Swapper - Time slot exchange platform for students",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "version": "1.0.0"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{authToken}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:5000/api",
+            "type": "string"
+        },
+        {
+            "key": "authToken",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "userId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "eventId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "swapRequestId",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Register User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set('authToken', jsonData.token);",
+                                    "    pm.collectionVariables.set('userId', jsonData.user._id);",
+                                    "    pm.environment.set('authToken', jsonData.token);",
+                                    "    console.log('Token saved:', jsonData.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "description": "Register a new user account. Returns user data and JWT token."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set('authToken', jsonData.token);",
+                                    "    pm.collectionVariables.set('userId', jsonData.user._id);",
+                                    "    pm.environment.set('authToken', jsonData.token);",
+                                    "    console.log('Token saved:', jsonData.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Login with email and password. Returns JWT token for authenticated requests."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Current User",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/me",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "me"
+                            ]
+                        },
+                        "description": "Get currently authenticated user's profile. Requires valid JWT token."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Authentication endpoints for user registration, login, and profile retrieval."
+        },
+        {
+            "name": "Events",
+            "item": [
+                {
+                    "name": "Create Event",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set('eventId', jsonData.event._id);",
+                                    "    console.log('Event ID saved:', jsonData.event._id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Data Structures Lab\",\n  \"startTime\": \"2025-11-07T10:00:00Z\",\n  \"endTime\": \"2025-11-07T12:00:00Z\",\n  \"status\": \"SWAPPABLE\",\n  \"description\": \"Lab session in Room 301\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/events",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "events"
+                            ]
+                        },
+                        "description": "Create a new event with conflict detection. Status can be BUSY, SWAPPABLE, or SWAP_PENDING."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Events",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/events",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "events"
+                            ]
+                        },
+                        "description": "Get all events for the authenticated user. Supports filtering by status and date range."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Events by Status",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/events?status=SWAPPABLE",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "events"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "SWAPPABLE",
+                                    "description": "Filter by status: BUSY, SWAPPABLE, or SWAP_PENDING"
+                                }
+                            ]
+                        },
+                        "description": "Get events filtered by status."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Events by Date Range",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/events?startDate=2025-11-01&endDate=2025-11-30",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "events"
+                            ],
+                            "query": [
+                                {
+                                    "key": "startDate",
+                                    "value": "2025-11-01"
+                                },
+                                {
+                                    "key": "endDate",
+                                    "value": "2025-11-30"
+                                }
+                            ]
+                        },
+                        "description": "Get events within a specific date range."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Single Event",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/events/{{eventId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "events",
+                                "{{eventId}}"
+                            ]
+                        },
+                        "description": "Get details of a specific event by ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Event (Full)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Updated Data Structures Lab\",\n  \"startTime\": \"2025-11-07T14:00:00Z\",\n  \"endTime\": \"2025-11-07T16:00:00Z\",\n  \"status\": \"BUSY\",\n  \"description\": \"Updated lab session\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/events/{{eventId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "events",
+                                "{{eventId}}"
+                            ]
+                        },
+                        "description": "Full update of an event. All fields required."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Event (Partial)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Partially Updated Title\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/events/{{eventId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "events",
+                                "{{eventId}}"
+                            ]
+                        },
+                        "description": "Partial update - only specified fields are updated. Others remain unchanged."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Event Status Only",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"SWAPPABLE\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/events/{{eventId}}/status",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "events",
+                                "{{eventId}}",
+                                "status"
+                            ]
+                        },
+                        "description": "Update only the status of an event (BUSY, SWAPPABLE, SWAP_PENDING)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Event",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/events/{{eventId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "events",
+                                "{{eventId}}"
+                            ]
+                        },
+                        "description": "Delete an event permanently."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Event management endpoints for CRUD operations with conflict detection."
+        },
+        {
+            "name": "Marketplace",
+            "item": [
+                {
+                    "name": "Get All Swappable Slots",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/swappable-slots",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "swappable-slots"
+                            ]
+                        },
+                        "description": "Get all available swappable slots from other users (excludes your own slots)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Swappable Slots by Date Range",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/swappable-slots?startDate=2025-11-01&endDate=2025-11-30",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "swappable-slots"
+                            ],
+                            "query": [
+                                {
+                                    "key": "startDate",
+                                    "value": "2025-11-01"
+                                },
+                                {
+                                    "key": "endDate",
+                                    "value": "2025-11-30"
+                                }
+                            ]
+                        },
+                        "description": "Get swappable slots filtered by date range."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Marketplace endpoints to browse available slots for swapping."
+        },
+        {
+            "name": "Swap Operations",
+            "item": [
+                {
+                    "name": "Create Swap Request",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    const jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set('swapRequestId', jsonData.request._id);",
+                                    "    console.log('Swap Request ID saved:', jsonData.request._id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"mySlotId\": \"YOUR_EVENT_ID\",\n  \"theirSlotId\": \"OTHER_USER_EVENT_ID\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/swap-request",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "swap-request"
+                            ]
+                        },
+                        "description": "Create a swap request by providing your slot ID and the slot ID you want. Both slots must have status SWAPPABLE."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Accept Swap Request",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"accept\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/swap-response/{{swapRequestId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "swap-response",
+                                "{{swapRequestId}}"
+                            ]
+                        },
+                        "description": "Accept a swap request. Swaps slot ownership atomically using MongoDB transactions."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reject Swap Request",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"accept\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/swap-response/{{swapRequestId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "swap-response",
+                                "{{swapRequestId}}"
+                            ]
+                        },
+                        "description": "Reject a swap request. Both slots revert to SWAPPABLE status."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Incoming Swap Requests",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/swap-requests/incoming",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "swap-requests",
+                                "incoming"
+                            ]
+                        },
+                        "description": "Get all pending swap requests sent to you by other users."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Outgoing Swap Requests",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{authToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/swap-requests/outgoing",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "swap-requests",
+                                "outgoing"
+                            ]
+                        },
+                        "description": "Get all swap requests you've sent (includes PENDING, ACCEPTED, and REJECTED)."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Swap operation endpoints for creating and managing slot exchange requests."
+        }
+    ]
+}
